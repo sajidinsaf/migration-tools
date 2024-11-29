@@ -27,7 +27,7 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
 			if (!sb.toString().equals("")) {
 				sb.append(System.getProperty("line.separator"));
 			}
-			String programTextLine = programTextString.replaceAll("metricName", metricName).replaceAll("label", getAsLabel(metricName));
+			String programTextLine = programTextString.replaceAll("metricName", metricName).replaceAll("labelName", getAsLabel(metricName));
 			sb.append(programTextLine);
 		}
 		return sb.toString();
@@ -38,7 +38,7 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
 	}
 	
 	
-	public List<String> getMetricNames(List<NrqlQuery> nrqls) {
+	private List<String> getMetricNames(List<NrqlQuery> nrqls) {
 		List<String> metricNames = new ArrayList<String>();
 		for (NrqlQuery nrqlQuery : nrqls) {
 			String query = nrqlQuery.getQuery();
@@ -49,7 +49,8 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
 	}
 	
 	private String findAndMapMetricName(String query) {
-      String nrMetricName = query.split("(")[1].split(")")[0];
+      String nrMetricName = query.split("\\(")[1].split("\\)")[0];
+      // System.out.println(nrMetricName);
       String mappedMetricName = metricNameTransformer.transform(nrMetricName);
       return mappedMetricName;
 	}
