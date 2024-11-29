@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.splunk.terraform.Chart;
+import com.attuned.o11ytools.model.splunk.terraform.TimeChart;
+
 import static com.attuned.o11ytools.migrate.nr_to_splunk.transform.NRWidgetType.*;
 
 public class NRTimeWidgetToSplunkO11yTimeChartTransformer extends NRWidgetToSplunkOllyChartTransformer {
@@ -16,6 +18,8 @@ public class NRTimeWidgetToSplunkO11yTimeChartTransformer extends NRWidgetToSplu
 
   @Override
   protected Chart buildChart(NRWidget w, String id, String title, String title2, String programText) {
+    
+    TimeChart timeChart = new TimeChart(id, title, title2, programText, programText, false, null);
     return null;
   }
 

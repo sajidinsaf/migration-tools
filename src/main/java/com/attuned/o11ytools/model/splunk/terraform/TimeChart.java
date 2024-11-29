@@ -3,7 +3,7 @@ package com.attuned.o11ytools.model.splunk.terraform;
 import java.util.List;
 
 public class TimeChart extends Chart {
-    private String plot_type;
+    private String plotType;
     private boolean showDataMarkers = true;
     private LegendOptionsFields legendOptionsFields;
 
@@ -12,23 +12,23 @@ public class TimeChart extends Chart {
 		super(terraformTemplateLines);
 	}
 	
-	public TimeChart(String id, String name, String description, String programText, String plot_type, boolean showDataMarkers, List<String> terraformTemplateLines) {
+	public TimeChart(String id, String name, String description, String programText, String plotType, boolean showDataMarkers, List<String> terraformTemplateLines) {
 		super(id, name, description, programText, terraformTemplateLines);
-		this.plot_type = plot_type;
+		this.plotType = plotType;
 		this.showDataMarkers = showDataMarkers;
 	}
 	
-	public TimeChart(String id, String name, String description, String programText, String plot_type, List<String> terraformTemplateLines) {
+	public TimeChart(String id, String name, String description, String programText, String plotType, List<String> terraformTemplateLines) {
 		super(id, name, description, programText, terraformTemplateLines);
-		this.plot_type = plot_type;
+		this.plotType = plotType;
 	}
 
 	public String getPlot_type() {
-		return plot_type;
+		return plotType;
 	}
 
-	public void setPlot_type(String plot_type) {
-		this.plot_type = plot_type;
+	public void setPlot_type(String plotType) {
+		this.plotType = plotType;
 	}
 
 	public boolean isShowDataMarkers() {
