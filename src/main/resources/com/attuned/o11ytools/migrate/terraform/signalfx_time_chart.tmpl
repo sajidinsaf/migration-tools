@@ -1,0 +1,11 @@
+resource "signalfx_time_chart" "@@chartId@@" {
+    name = "@@chartName@@"
+    program_text = <<-EOF
+        @@programText@@
+        EOF
+    plot_type = "LineChart"
+    show_data_markers = @@showDataMarkers@@
+    description = "@@description@@"
+
+    @@legend_options_fields@@
+}
