@@ -14,13 +14,13 @@ import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.parser.nr.NewRelicDashboardJsonParser;
 import com.attuned.o11ytools.util.FileUtils;
 
-public class NRToSplunkO11yDashboardMigrator {
+public class NRToSplunkDashboardMigrator {
 	
 	private static boolean runWithStats = true;
 	
 	private FileUtils filePathBuilder;
 	
-	public NRToSplunkO11yDashboardMigrator(FileUtils filePathBuilder) {
+	public NRToSplunkDashboardMigrator(FileUtils filePathBuilder) {
 		this.filePathBuilder = filePathBuilder;
 	}
 
@@ -34,7 +34,7 @@ public class NRToSplunkO11yDashboardMigrator {
 		props.load(new FileReader(args[0]));
 		
 
-		new NRToSplunkO11yDashboardMigrator(new FileUtils()).process(props);
+		new NRToSplunkDashboardMigrator(new FileUtils()).process(props);
 		
 
 	}

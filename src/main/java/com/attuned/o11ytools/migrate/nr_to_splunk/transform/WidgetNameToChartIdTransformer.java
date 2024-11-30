@@ -4,10 +4,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 
-public class NRWidgetToSplunkO11yChartIdTransformer implements Transformer<NRWidget, String> {
+public class WidgetNameToChartIdTransformer implements Transformer<NRWidget, String> {
 	
 	private AtomicInteger counter = null;
-	public NRWidgetToSplunkO11yChartIdTransformer() {
+	public WidgetNameToChartIdTransformer() {
 		counter = new AtomicInteger(0);
 	}
 

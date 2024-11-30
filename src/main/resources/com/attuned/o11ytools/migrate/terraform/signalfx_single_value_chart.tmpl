@@ -1,0 +1,12 @@
+resource "signalfx_single_value_chart" "@@chartId@@" {
+    name = "@@chartName@@"
+    description = "@@description@@"
+    program_text = <<-EOF
+        @@programText@@
+        EOF
+
+    @color_by_block@
+
+    secondary_visualization = "None"
+    
+}

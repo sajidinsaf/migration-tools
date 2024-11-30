@@ -5,54 +5,54 @@ import java.util.List;
 
 public class SingleValueChart extends Chart {
 
-    private String color_by ="Scale",  secondary_visualization  = "Radial";
-    
-    private List<ColourScale> colourScale;
+  private String color_by = "Scale", secondaryVisualization = "Radial";
 
+  private List<ColourScale> colourScaleBlock;
 
-    public SingleValueChart(List<String> terraformTemplateLines) {
-    	super(terraformTemplateLines);
-    }
-	public SingleValueChart(String id, String name, String description, String programText, String color_by, String secondary_visualization, List<ColourScale> colourScale, List<String> terraformTemplateLines) {
-		super(id, name, description, programText, terraformTemplateLines);
-		this.color_by = color_by;
-		this.secondary_visualization = secondary_visualization;
-		this.colourScale = colourScale;
-	}
-	
-	public String getColor_by() {
-		return color_by;
-	}
-	public void setColor_by(String color_by) {
-		this.color_by = color_by;
-	}
-	public String getSecondary_visualization() {
-		return secondary_visualization;
-	}
-	public void setSecondary_visualization(String secondary_visualization) {
-		this.secondary_visualization = secondary_visualization;
-	}
-	public List<ColourScale> getColourScale() {
-		return colourScale;
-	}
-	public void setColourScale(List<ColourScale> colourScale) {
-		this.colourScale = colourScale;
-	}
-	@Override
-	public String toString() {
-		return "SingleValueChart [color_by=" + color_by + ", secondary_visualization=" + secondary_visualization
-				+ ", colourScale=" + colourScale + ", " + super.toString() + "]";
-	}
-	
+  public SingleValueChart(List<String> terraformTemplateLines) {
+    super(terraformTemplateLines);
+  }
 
-    @Override
-	protected String renderSpecifics(String line) {
-    	line.replaceAll("@@showDataMarkers@@", "true");
-    	
-    	return line;
-	}
+  public SingleValueChart(String id, String name, String description, String programText,
+      List<String> terraformTemplateLines) {
+    super(id, name, description, programText, terraformTemplateLines);
+  }
 
-	
-    
+  public String getColor_by() {
+    return color_by;
+  }
+
+  public void setColor_by(String color_by) {
+    this.color_by = color_by;
+  }
+
+  public String getSecondaryVisualization() {
+    return secondaryVisualization;
+  }
+
+  public void setSecondaryVisualization(String secondaryVisualization) {
+    this.secondaryVisualization = secondaryVisualization;
+  }
+
+  public List<ColourScale> getColourScaleBlock() {
+    return colourScaleBlock;
+  }
+
+  public void setColourScaleBlock(List<ColourScale> colourScale) {
+    this.colourScaleBlock = colourScale;
+  }
+
+  @Override
+  public String toString() {
+    return "SingleValueChart [color_by=" + color_by + ", secondaryVisualization=" + secondaryVisualization
+        + ", colourScaleBlock=" + colourScaleBlock + ", " + super.toString() + "]";
+  }
+
+  @Override
+  protected String renderSpecifics(String line) {
+    //line.replaceAll("@@showDataMarkers@@", "true");
+
+    return line;
+  }
 
 }

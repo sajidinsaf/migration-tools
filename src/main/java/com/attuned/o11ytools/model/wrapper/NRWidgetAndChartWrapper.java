@@ -3,18 +3,26 @@ package com.attuned.o11ytools.model.wrapper;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.splunk.terraform.Chart;
 
-public class NRWidgetAndChartWrapper implements Wrapper<NRWidget, Chart> {
+public class NRWidgetAndChartWrapper<P extends Chart> implements Wrapper<NRWidget, P> {
 
-	@Override
+  private NRWidget left;
+  private P right;
+  
+  
+	public NRWidgetAndChartWrapper(NRWidget left, P right) {
+    super();
+    this.left = left;
+    this.right = right;
+  }
+
+  @Override
 	public NRWidget getLeft() {
-		// TODO Auto-generated method stub
-		return null;
+		return left;
 	}
 
 	@Override
-	public Chart getRight() {
-		// TODO Auto-generated method stub
-		return null;
+	public P getRight() {
+		return right;
 	}
 
 }
