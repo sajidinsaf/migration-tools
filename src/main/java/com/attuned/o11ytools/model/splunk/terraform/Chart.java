@@ -18,14 +18,19 @@ public abstract class Chart implements Terraformable {
 	public Chart(String id, String name, String description, String programText, List<String> terraformTemplateLines) {
 		super();
 		this.terraformTemplateLines = terraformTemplateLines;
-		this.id = id;
-		this.name = name;
-		this.description = description;
+		this.id = clean(id);
+		this.name = clean(name);
+		this.description = clean(description);
 		this.programText = programText;
 	}
 	
 	
-	public String getId() {
+	private String clean(String s) {
+    
+    return s.replaceAll("\\$", "usd").replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\%", "pct").replaceAll("'", "");
+  }
+
+  public String getId() {
 		return id;
 	}
 	public void setId(String id) {
@@ -60,18 +65,37 @@ public abstract class Chart implements Terraformable {
 		List<String> renderredLines = new ArrayList<String>();
 		
 		for (String line : terraformTemplateLines) {
+		  try {
 			line = line.replaceAll("@@chartId@@", getId());
 			line = line.replace("@@chartName@@", getName());
-			line = line.replaceAll("@@programText@@", getProgramText());
+			line = line.replaceAll("@@programText@@", getProgramText(line));
 			line = line.replaceAll("@@description@@", getDescription());
 			line = renderSpecifics(line);
 			//line = specifics.isEmpty() ? line : specifics;
 			renderredLines.add(line);
+		  } catch (Exception e) {
+		    System.out.println("Warning!!! Error passing line: ["+line+"] "+this);
+		  }
 		}
 		
 		return renderredLines;
 	}
 
-	protected abstract String renderSpecifics(String line);
+	private String getProgramText(String line) {
+	  String lineSep = System.getProperty("line.separator");
+	  if (programText.indexOf(lineSep) == -1) {
+	    return programText;
+	  }
+	  String indent = line.split("@")[0];
+	  String[] dataPoints = programText.split(lineSep);
+	  StringBuilder sb = new StringBuilder(dataPoints[0]);
+	  
+	  for (int i=1; i<dataPoints.length; i++) {
+	    sb.append(lineSep).append(indent).append(dataPoints[i]);
+	  }
+    return sb.toString();
+  }
+
+  protected abstract String renderSpecifics(String line);
 	
 }

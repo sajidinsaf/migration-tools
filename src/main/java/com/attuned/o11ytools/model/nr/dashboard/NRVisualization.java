@@ -20,7 +20,7 @@ public class NRVisualization {
 	}
 	@Override
 	public String toString() {
-		return "NRVisualization [id=" + id + "]";
+		return " [id=" + id + "]";
 	}
     
     

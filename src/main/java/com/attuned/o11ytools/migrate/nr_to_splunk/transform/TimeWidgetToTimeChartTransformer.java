@@ -1,6 +1,7 @@
 package com.attuned.o11ytools.migrate.nr_to_splunk.transform;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,9 @@ public class TimeWidgetToTimeChartTransformer extends WidgetToChartTransformer<T
   public TimeWidgetToTimeChartTransformer(Transformer<NRWidget, String> chartIdTransformer,
       Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory) {
     super(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory);
+    
+    plotTypeMap = new HashMap<String, String>();
+    
     plotTypeMap.put(viz_line.getName(), "LineChart");
     plotTypeMap.put(viz_area.getName(), "AreaChart");
     plotTypeMap.put(viz_stackedBar.getName(), "ColumnChart");

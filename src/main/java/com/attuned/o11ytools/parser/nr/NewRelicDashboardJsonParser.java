@@ -99,9 +99,13 @@ public class NewRelicDashboardJsonParser {
 			NewRelicPageJsonParser nrPageJsonParser = new NewRelicPageJsonParser(new NewRelicWidgetJsonParser());
 			List<NRPage> pages = nrPageJsonParser.parsePages(pageJsons);
 
+			if (name == null) {
+		    System.out.println(file.getAbsolutePath()+"Warning!!! Dashboard name is null. Dashboard will not be parsed. NR Dashboard JSON file: "+file.getAbsolutePath());
+			} else {
 			dashboards.add(new NRDashboard(name, description, permissions, pages));
+			}
 
-
+      reader.close();
 
 
 		}

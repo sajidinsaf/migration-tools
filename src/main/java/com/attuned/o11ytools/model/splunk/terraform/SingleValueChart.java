@@ -50,9 +50,31 @@ public class SingleValueChart extends Chart {
 
   @Override
   protected String renderSpecifics(String line) {
-    //line.replaceAll("@@showDataMarkers@@", "true");
+    if (line.contains("@@color_by_block@@")) {
+      if (colourScaleBlock == null || colourScaleBlock.isEmpty()) {
+        return "";
+      }
+
+      String lof = getAsString(colourScaleBlock);
+      line = line.replaceAll("@@color_by_block@@", lof);
+    } 
 
     return line;
   }
 
+  private String getAsString(List<ColourScale> colourScaleBlocks) {
+    StringBuilder sb = new StringBuilder();
+    for (ColourScale s : colourScaleBlocks) {
+      sb.append(s.getAsTerraformText()).append(System.getProperty("line.separator"));
+    }
+    return sb.toString();
+  } 
+  
+  public static void main(String[] args) {
+    StringBuilder sb = new StringBuilder("asd").append(System.getProperty("line.separator")).append("bbc").append(System.getProperty("line.separator")).append("asd").append(System.getProperty("line.separator"));
+    
+    for (String s : sb.toString().split(System.getProperty("line.separator"))) {
+      System.out.println(s);
+    }
+  }
 }

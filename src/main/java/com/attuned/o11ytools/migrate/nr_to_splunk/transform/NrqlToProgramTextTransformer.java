@@ -3,6 +3,7 @@ package com.attuned.o11ytools.migrate.nr_to_splunk.transform;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.attuned.o11ytools.migrate.nr_to_splunk.Constants;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.nr.dashboard.NrqlQuery;
 
@@ -49,10 +50,15 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
 	}
 	
 	private String findAndMapMetricName(String query) {
+	  try {
       String nrMetricName = query.split("\\(")[1].split("\\)")[0];
       // System.out.println(nrMetricName);
       String mappedMetricName = metricNameTransformer.transform(nrMetricName);
       return mappedMetricName;
+	  } catch (Exception e) {
+	    System.out.println("Warning!!! exception wnile extracting metric name. Deafult metric name will be used. For query: "+query);
+	  }
+    return Constants.DEFAULT_METRIC_NAME;
 	}
 
 }

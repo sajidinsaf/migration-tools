@@ -66,8 +66,8 @@ public class NRWidget {
 
 	@Override
 	public String toString() {
-		return "NRWidget [title=" + title + ", layout=" + layout + ", linkedEntityGuids="
-				+ Arrays.toString(linkedEntityGuids) + ", visualization=" + visualization + ", rawConfiguration="
+		return "NRWidget [title=" + title  + ", visualization=" + visualization + ", layout=" + layout + ", linkedEntityGuids="
+				+ Arrays.toString(linkedEntityGuids) + ", rawConfiguration="
 				+ rawConfiguration + "]";
 	}
 	
