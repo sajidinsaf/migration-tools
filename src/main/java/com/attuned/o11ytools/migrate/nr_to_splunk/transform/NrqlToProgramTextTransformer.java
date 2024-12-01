@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.attuned.o11ytools.migrate.nr_to_splunk.Constants;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.nr.dashboard.NrqlQuery;
 
 public class NrqlToProgramTextTransformer implements Transformer<NRWidget, String> {
 
+  private static final Logger LOGGER = LogManager.getLogger(NrqlToProgramTextTransformer.class);
+  
 	private Transformer<String, String> metricNameTransformer;
 	private String programTextString = "data(\"metricName\").publish(label=\"labelName\")";
 	
@@ -60,7 +65,7 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
       String mappedMetricName = metricNameTransformer.transform(nrMetricName);
       return mappedMetricName;
 	  } catch (Exception e) {
-	    System.out.println("Warning!!! exception wnile extracting metric name. Deafult metric name will be used. For query: "+query);
+	    LOGGER.warn("Exception wnile extracting metric name. Deafult metric name will be used. For query: "+query);
 	  }
     return Constants.DEFAULT_METRIC_NAME;
 	}
