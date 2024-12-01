@@ -18,6 +18,8 @@ public class DefaultMetricNameTransformer implements Transformer<String, String>
     if (metric != null) {
       return metric;
     }
+    
+    System.out.println("metric not transformed: "+t);
     return "cpu.utilization";
   }
 

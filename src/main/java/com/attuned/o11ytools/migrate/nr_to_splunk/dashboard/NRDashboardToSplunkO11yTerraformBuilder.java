@@ -37,9 +37,7 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
 		
 		
 		for (NRDashboard nrDashboard : nrDashboards) {
-//		  if (!nrDashboard.getName().contains("SRE")) {
-//		    continue;
-//		  }
+
 			File dashboardGroupTFFile = fileUtils.getSplunkDashboardGroupTFFilePath(nrDashboard, terraformDir);
       fileUtils.writeToFile(getDashboardGroupLines(nrDashboard, props), dashboardGroupTFFile, false);
 			for (NRPage page : nrDashboard.getPages()) {

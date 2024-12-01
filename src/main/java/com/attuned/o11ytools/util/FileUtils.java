@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.attuned.o11ytools.migrate.nr_to_splunk.Constants;
 import com.attuned.o11ytools.model.nr.dashboard.NRDashboard;
 import com.attuned.o11ytools.model.nr.dashboard.NRPage;
 
@@ -19,7 +20,7 @@ public class FileUtils {
 	public File getUniquePathUnderBaseDir(File baseDir, String dirPrefix) {
 		String basePath = baseDir.getAbsolutePath();
 		
-		String filePath = basePath + System.getProperty("file.separator")+dirPrefix+"_"+System.currentTimeMillis();
+		String filePath = basePath + System.getProperty("file.separator")+dirPrefix+"_"+new DateUtils().getCurrentTimeStampAsDateString(Constants.DATE_FORMAT_FOR_DIRECTORIES);
 		
 		File newDir = new File(filePath);
 	    newDir.mkdir();
@@ -32,14 +33,24 @@ public class FileUtils {
 	public File getSplunkDashboardGroupTFFilePath(NRDashboard dash, File baseDir) {
 		String basePath = baseDir.getAbsolutePath();
 		// System.out.println(dash);
-		String fileName = "Dashboard_"+cleanForFileName(dash.getName())+".tf";
-		String filePath = basePath + System.getProperty("file.separator")+fileName;
+
+		File dashboardPath = new File(basePath + System.getProperty("file.separator")+"Dashboards");
+		if (!dashboardPath.exists()) {
+		  dashboardPath.mkdir();
+		}
+    String fileName = "Dashboard_"+cleanForFileName(dash.getName())+".tf";
+		String filePath = dashboardPath.getAbsolutePath()+System.getProperty("file.separator")+fileName;
 		return new File(filePath);
 	}
 	
 	public File getChartsFilePathForDashboard(NRDashboard dash, File baseDir) {
 		String basePath = baseDir.getAbsolutePath();
-		String filePath = basePath + System.getProperty("file.separator")+"Charts_"+cleanForFileName(dash.getName())+".tf";
+    File chartsPath = new File(basePath + System.getProperty("file.separator")+"Charts");
+    if (!chartsPath.exists()) {
+      chartsPath.mkdir();
+    }
+		String fileName = "Charts_"+cleanForFileName(dash.getName())+".tf";
+		String filePath = chartsPath.getAbsolutePath()+System.getProperty("file.separator")+fileName;
 		return new File(filePath);
 	}
 
