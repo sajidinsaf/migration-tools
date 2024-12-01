@@ -37,7 +37,9 @@ public abstract class WidgetToChartTransformer<C extends Chart> implements Trans
 		  name =id;
 		}
 		
-		C chart = buildChart(w, id, name, w.getTitle(), programText);
+		String description = idUtils.cleanForTerraform(w.getTitle());
+		
+		C chart = buildChart(w, id, name, description, programText);
 		return new NRWidgetAndChartWrapper(w, chart);
 	}
 	

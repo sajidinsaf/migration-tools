@@ -20,6 +20,10 @@ public class NRFacet {
 	public void setShowOtherSeries(boolean showOtherSeries) {
 		this.showOtherSeries = showOtherSeries;
 	}
-	 
+
+  @Override
+  public String toString() {
+    return "NRFacet [showOtherSeries=" + showOtherSeries + "]";
+  }
 	 
 }

@@ -3,17 +3,21 @@ package com.attuned.o11ytools.model.splunk.terraform;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.attuned.o11ytools.migrate.terraform.Terraformable;
 
 public abstract class Chart implements Terraformable {
 
+  private final Logger LOGGER;
 	private String id, name, description, programText;
     
   private List<String> terraformTemplateLines;
 
 	
 	public Chart(String id, String name, String description, String programText, List<String> terraformTemplateLines) {
-		super();
+		LOGGER = LogManager.getLogger(getClass());
 		this.terraformTemplateLines = terraformTemplateLines;
 		this.id = id;
 		this.name = name;
@@ -65,7 +69,7 @@ public abstract class Chart implements Terraformable {
 			//line = specifics.isEmpty() ? line : specifics;
 			renderredLines.add(line);
 		  } catch (Exception e) {
-		    System.out.println("Warning!!! Error passing line: ["+line+"] "+this);
+		    LOGGER.error("Warning!!! Error passing line: ["+line+"] "+this, e);
 		  }
 		}
 		

@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.attuned.o11ytools.migrate.nr_to_splunk.transform.NrqlToProgramTextTransformer;
 import com.attuned.o11ytools.migrate.nr_to_splunk.transform.Transformer;
 import com.attuned.o11ytools.model.nr.dashboard.NRDashboard;
 import com.attuned.o11ytools.model.nr.dashboard.NRPage;
@@ -18,7 +22,8 @@ import com.attuned.o11ytools.util.FileUtils;
 import com.attuned.o11ytools.util.IdUtils;
 
 public class NRDashboardToSplunkO11yTerraformBuilder {
-	
+  private static final Logger LOGGER = LogManager.getLogger(NRDashboardToSplunkO11yTerraformBuilder.class);
+  
 	private FileUtils fileUtils;
 	private Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers;
 	private IdUtils idUtils;
@@ -51,7 +56,7 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
 					String widgetId = w.getVisualization().getId();
 					Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> transformer = widgetToChartTransformers.get(widgetId);
 					if (transformer == null) {
-					  System.out.println("No transformer found for NR widget: "+w);
+					  LOGGER.warn("No transformer found for NR widget: "+w);
 					  continue;
 					}
 					NRWidgetAndChartWrapper<? extends Chart> wrapper = transformer.transform(w);
