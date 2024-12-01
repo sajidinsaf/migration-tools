@@ -7,21 +7,13 @@ public class TimeChart extends Chart {
     private boolean showDataMarkers = true;
     private LegendOptionsFields legendOptionsFields;
 
-    
-	public TimeChart(List<String> terraformTemplateLines) {
-		super(terraformTemplateLines);
-	}
 	
 	public TimeChart(String id, String name, String description, String programText, String plotType, boolean showDataMarkers, List<String> terraformTemplateLines) {
 		super(id, name, description, programText, terraformTemplateLines);
 		this.plotType = plotType;
 		this.showDataMarkers = showDataMarkers;
 	}
-	
-	public TimeChart(String id, String name, String description, String programText, String plotType, List<String> terraformTemplateLines) {
-		super(id, name, description, programText, terraformTemplateLines);
-		this.plotType = plotType;
-	}
+
 
 	public String getPlot_type() {
 		return plotType;
@@ -70,7 +62,7 @@ public class TimeChart extends Chart {
 	}
 	
   @Override
-  protected String getSignalFxTerraformChartType() {
+  public String getSignalFxTerraformChartType() {
     return "signalfx_time_chart";
   }
 

@@ -98,7 +98,7 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
     List<String> lines = new ArrayList<String>();
   
     lines.add("resource \"signalfx_dashboard\" \""+page.getId()+"\" {");
-    lines.add("  name = \""+page.getName()+"\"");
+    lines.add("  name = \""+idUtils.cleanForTerraform(page.getName())+"\"");
     lines.add("  description = \""+page.getDescription()+"\""); 
     lines.add("  dashboard_group = signalfx_dashboard_group."+dashboard.getId()+".id");
     return lines;
@@ -107,7 +107,7 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
   private List<String> getDashboardGroupLines(NRDashboard nrDashboard, Properties props) {
     List<String> lines = new ArrayList<String>();
     lines.add("resource \"signalfx_dashboard_group\" \""+nrDashboard.getId()+"\" {"); 
-    lines.add("  name = \""+nrDashboard.getName()+"\"");
+    lines.add("  name = \""+idUtils.cleanForTerraform(nrDashboard.getName())+"\"");
     lines.add("  description = \""+nrDashboard.getDescription()+"\"");
     lines.add("  permissions {");
     lines.add("    principal_id    = \""+props.getProperty("principal.id")+"\"");

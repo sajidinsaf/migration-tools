@@ -1,6 +1,7 @@
 package com.attuned.o11ytools.migrate.nr_to_splunk.transform;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.attuned.o11ytools.migrate.nr_to_splunk.Constants;
@@ -45,6 +46,9 @@ public class NrqlToProgramTextTransformer implements Transformer<NRWidget, Strin
 			String query = nrqlQuery.getQuery();
 			String metricName = findAndMapMetricName(query);
 			metricNames.add(metricName);
+		}
+		if (metricNames.isEmpty()) {
+		  return Arrays.asList(Constants.DEFAULT_METRIC_NAME);
 		}
 		return metricNames;
 	}

@@ -1,6 +1,5 @@
 package com.attuned.o11ytools.model.splunk.terraform;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SingleValueChart extends Chart {
@@ -8,10 +7,6 @@ public class SingleValueChart extends Chart {
   private String color_by = "Scale", secondaryVisualization = "Radial";
 
   private List<ColourScale> colourScaleBlock;
-
-  public SingleValueChart(List<String> terraformTemplateLines) {
-    super(terraformTemplateLines);
-  }
 
   public SingleValueChart(String id, String name, String description, String programText,
       List<String> terraformTemplateLines) {
@@ -79,7 +74,7 @@ public class SingleValueChart extends Chart {
   }
 
   @Override
-  protected String getSignalFxTerraformChartType() {
+  public String getSignalFxTerraformChartType() {
     return "signalfx_single_value_chart";
   }
 }

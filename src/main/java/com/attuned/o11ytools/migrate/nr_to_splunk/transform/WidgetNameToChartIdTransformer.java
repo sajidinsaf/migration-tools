@@ -3,12 +3,15 @@ package com.attuned.o11ytools.migrate.nr_to_splunk.transform;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
+import com.attuned.o11ytools.util.IdUtils;
 
 public class WidgetNameToChartIdTransformer implements Transformer<NRWidget, String> {
 	
 	private AtomicInteger counter = null;
-	public WidgetNameToChartIdTransformer() {
+	private IdUtils idUtils;
+	public WidgetNameToChartIdTransformer(IdUtils idUtils) {
 		counter = new AtomicInteger(0);
+		this.idUtils = idUtils;
 	}
 
 	@Override
@@ -19,7 +22,7 @@ public class WidgetNameToChartIdTransformer implements Transformer<NRWidget, Str
 	}
 	
 	public String clean(String name) {
-		return name.replaceAll(" ", "_");
+		return "chart_"+idUtils.buildIdFromName(name);
 	}
 
 }

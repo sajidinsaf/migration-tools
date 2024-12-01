@@ -4,5 +4,5 @@ public class Constants {
 
   public static final String DEFAULT_METRIC_NAME = "cpu.utilization";
   
-  public static final String DATE_FORMAT_FOR_DIRECTORIES = "yyyy_MM_dd_HH_mm_ss";
+  public static final String DATE_FORMAT_FOR_DIRECTORIES = "yyMMdd_HHmmss";
 }

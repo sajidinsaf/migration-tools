@@ -11,24 +11,15 @@ public abstract class Chart implements Terraformable {
     
   private List<String> terraformTemplateLines;
 
-	public Chart(List<String> terraformTemplateLines) {
-		this.terraformTemplateLines = terraformTemplateLines;
-	}
 	
 	public Chart(String id, String name, String description, String programText, List<String> terraformTemplateLines) {
 		super();
 		this.terraformTemplateLines = terraformTemplateLines;
-		this.id = clean(id);
-		this.name = clean(name);
-		this.description = clean(description);
+		this.id = id;
+		this.name = name;
+		this.description = description;
 		this.programText = programText;
 	}
-	
-	
-	private String clean(String s) {
-    
-    return s.replaceAll("\\$", "usd").replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\%", "pct").replaceAll("'", "");
-  }
 
   public String getId() {
 		return id;
@@ -98,9 +89,6 @@ public abstract class Chart implements Terraformable {
 
   protected abstract String renderSpecifics(String line);
   
-  protected abstract String getSignalFxTerraformChartType();
+  public abstract String getSignalFxTerraformChartType();
   
-  public String getTerraformChartIDForDashboard() {
-    return getSignalFxTerraformChartType() + "." + getId();
-  }
 }

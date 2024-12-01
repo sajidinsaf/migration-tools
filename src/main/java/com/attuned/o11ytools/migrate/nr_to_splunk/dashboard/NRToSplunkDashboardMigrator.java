@@ -28,15 +28,18 @@ import com.attuned.o11ytools.parser.nr.NewRelicPageJsonParser;
 import com.attuned.o11ytools.parser.nr.NewRelicWidgetJsonParser;
 import com.attuned.o11ytools.util.FileUtils;
 import com.attuned.o11ytools.util.IdUtils;
+import com.attuned.o11ytools.util.StatsUtils;
 
 public class NRToSplunkDashboardMigrator {
 	
 	private static boolean runWithStats = false;
 	
 	private FileUtils filePathBuilder;
+	private StatsUtils statsUtils;
 	
-	public NRToSplunkDashboardMigrator(FileUtils filePathBuilder) {
+	public NRToSplunkDashboardMigrator(FileUtils filePathBuilder, StatsUtils statsUtils) {
 		this.filePathBuilder = filePathBuilder;
+		this.statsUtils = statsUtils;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -49,7 +52,7 @@ public class NRToSplunkDashboardMigrator {
 		props.load(new FileReader(args[0]));
 		
 
-		new NRToSplunkDashboardMigrator(new FileUtils()).process(props);
+		new NRToSplunkDashboardMigrator(new FileUtils(), new StatsUtils()).process(props);
 		
 
 	}
@@ -65,45 +68,45 @@ public class NRToSplunkDashboardMigrator {
 		
 		List<NRDashboard> nrDashboards = new NewRelicDashboardJsonParser(idUtils, nrPageJsonParser).parse(dir);
 
-		printNRDashboardStats(nrDashboards);
+		statsUtils.printNRDashboardStats(nrDashboards, runWithStats);
 		
-		printNRWidgetStats(nrDashboards);
+		statsUtils.printNRWidgetStats(nrDashboards, runWithStats);
 		
-		Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers = getWidgetToChartTransformers(props);
+		Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers = getWidgetToChartTransformers(props, idUtils);
 	  new NRDashboardToSplunkO11yTerraformBuilder(filePathBuilder, new IdUtils(), widgetToChartTransformers).build(nrDashboards, props);
 		
 	}
 	
 	@SuppressWarnings({ "unchecked" })
-  private Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> getWidgetToChartTransformers(Properties props) {
+  private Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> getWidgetToChartTransformers(Properties props, IdUtils idUtils) {
 	  Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers = new HashMap<String, Transformer<NRWidget,NRWidgetAndChartWrapper<? extends Chart>>>();
 
-    Transformer<NRWidget, String> chartIdTransformer = new WidgetNameToChartIdTransformer();
+    Transformer<NRWidget, String> chartIdTransformer = new WidgetNameToChartIdTransformer(idUtils);
     
     Transformer<NRWidget, String> nrqlToProgramTextTransformer = new NrqlToProgramTextTransformer(new DefaultMetricNameTransformer(getMetricNameMapping(props)));
             
     SplunkO11yTemplateFactory templateFactory = new SplunkO11yTemplateFactory(filePathBuilder, props);
     
-    Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> timeWidgetTransformer = (Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>) getTimeWidgetToTimeChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory,props);
+    Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> timeWidgetTransformer = (Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>) getTimeWidgetToTimeChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory,props, idUtils);
 	  
 	  for (String name : new String[] {"viz.bar", "viz.markdown", "viz.line", "viz.area", "viz.table", "viz.pie", "viz.stacked-bar"}) {
 	    widgetToChartTransformers.put(name, timeWidgetTransformer);
 	  }
 	  
-	  Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> billboardWidgetTransformer = (Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>) getBillboardWidgetTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory);
+	  Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> billboardWidgetTransformer = (Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>) getBillboardWidgetTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory, idUtils);
     widgetToChartTransformers.put("viz.billboard", billboardWidgetTransformer);
     
     return widgetToChartTransformers;
   }
 
-  private Object getBillboardWidgetTransformer(Transformer<NRWidget, String> chartIdTransformer, Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory) {
-    BillboardToSingleValueChartTransformer biilboardTransformer = new BillboardToSingleValueChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory);
-    return biilboardTransformer;
+  private Object getBillboardWidgetTransformer(Transformer<NRWidget, String> chartIdTransformer, Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory, IdUtils idUtils) {
+    BillboardToSingleValueChartTransformer billboardTransformer = new BillboardToSingleValueChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory, idUtils);
+    return billboardTransformer;
   }
 
   private Object getTimeWidgetToTimeChartTransformer(Transformer<NRWidget, String> chartIdTransformer, Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory,
-      Properties props) {
-    return new TimeWidgetToTimeChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory);
+      Properties props, IdUtils idUtils) {
+    return new TimeWidgetToTimeChartTransformer(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory, idUtils);
 
   }
 
@@ -118,46 +121,5 @@ public class NRToSplunkDashboardMigrator {
     }
     return nameMapping;
   }
-
-  private void printNRWidgetStats(List<NRDashboard> nrDashboards) {
-		
-		if (!runWithStats) {
-			return;
-		}
-
-		Set<String> vizs = new HashSet<String>();
-		for (NRDashboard dash : nrDashboards) {
-			for (NRPage page : dash.getPages()) {
-
-				for (NRWidget w : page.getWidgets()) {
-					vizs.add(w.getVisualization().getId());
-					List<NrqlQuery> nrqlQueries = w.getRawConfiguration().getNrqlQueries();
-					for (NrqlQuery query : nrqlQueries) {
-						if (dash.getName().contains("SRE APM insight HLE")) {
-						   System.out.println(query.getQuery());
-						}
-					}
-
-				}
-			}
-		}
-		System.out.println(vizs);
-
-	}
-
-	private void printNRDashboardStats(List<NRDashboard> nrDashboards) {
-		if (!runWithStats) {
-			return;
-		}
-		int totalCount = 0;
-		for (NRDashboard dash : nrDashboards) {
-			for (NRPage page : dash.getPages()) {
-				int pageCount = page.getWidgets().size();
-				totalCount += pageCount;
-				System.out.println("Dashboard: "+dash.getName()+ " NRPage: "+page.getName()+ " WidgetCount: "+pageCount);
-			}
-		}
-		System.out.println("Total widget count: "+ totalCount);
-	}
 
 }

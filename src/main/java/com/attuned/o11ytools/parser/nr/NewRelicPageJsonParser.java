@@ -24,7 +24,7 @@ public class NewRelicPageJsonParser {
 		for (PageJson pgJson: pageJsons) {
 			NRPage page = new NRPage();
 			String name = pgJson.getName();
-			page.setId(idUtils.buildIdFromName(name+"_"+pageCounter.getAndIncrement()));
+			page.setId(idUtils.buildIdFromName("dashboard_"+name+"_"+pageCounter.getAndIncrement()));
 			page.setName(idUtils.buildIdFromName(name));
 			page.setDescription(pgJson.getDescription());
 			

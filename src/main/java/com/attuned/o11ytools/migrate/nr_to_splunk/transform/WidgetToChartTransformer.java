@@ -6,28 +6,38 @@ import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.splunk.terraform.Chart;
 import com.attuned.o11ytools.model.wrapper.NRWidgetAndChartWrapper;
 import com.attuned.o11ytools.model.wrapper.Wrapper;
+import com.attuned.o11ytools.util.IdUtils;
 
 public abstract class WidgetToChartTransformer<C extends Chart> implements Transformer<NRWidget, Wrapper<C, NRWidget>> {
 
 	private Transformer<NRWidget, String> chartIdTransformer;
 	private Transformer<NRWidget, String> nrqlToProgramTextTransformer;
 	private SplunkO11yTemplateFactory templateFactory;
+	private IdUtils idUtils;
 	
 	
-	public WidgetToChartTransformer(Transformer<NRWidget, String> chartIdTransformer, Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory) {
+	public WidgetToChartTransformer(Transformer<NRWidget, String> chartIdTransformer, Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory, IdUtils idUtils) {
 		this.chartIdTransformer = chartIdTransformer;
 		this.nrqlToProgramTextTransformer = nrqlToProgramTextTransformer;
 		this.templateFactory = templateFactory;
-		
+		this.idUtils = idUtils;
 	}
-	@Override
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
 	public  Wrapper<C, NRWidget> transform(NRWidget w) {
 		
 		String id = chartIdTransformer.transform(w);
 		
 		String programText = nrqlToProgramTextTransformer.transform(w);
 		
-		C chart = buildChart(w, id, w.getTitle(), w.getTitle(), programText);
+		String name = idUtils.buildIdFromName(w.getTitle());
+		
+		if (name.equals("")) {
+		  name =id;
+		}
+		
+		C chart = buildChart(w, id, name, w.getTitle(), programText);
 		return new NRWidgetAndChartWrapper(w, chart);
 	}
 	

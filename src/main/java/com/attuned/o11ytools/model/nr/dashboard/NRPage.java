@@ -5,22 +5,15 @@ import java.util.List;
 
 public class NRPage {
 
-    private String id;
-    private String name;
-    private String description;
-    private List<NRWidget> widgets;
+  private String id;
+  private String name;
+  private String description;
+  private List<NRWidget> widgets;
     
-    public NRPage() {
-    	widgets = new ArrayList<NRWidget>();
-    }
-    
-	public NRPage(String id, String name, String description, List<NRWidget> widgets) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.widgets = widgets;
-	}
+  public NRPage() {
+  	widgets = new ArrayList<NRWidget>();
+  }
+
 	
   public String getId() {
     return id;

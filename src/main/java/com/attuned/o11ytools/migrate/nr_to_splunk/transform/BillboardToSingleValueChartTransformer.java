@@ -7,14 +7,15 @@ import java.util.Map;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.model.splunk.terraform.SingleValueChart;
 import com.attuned.o11ytools.model.splunk.terraform.TimeChart;
+import com.attuned.o11ytools.util.IdUtils;
 
 import static com.attuned.o11ytools.migrate.nr_to_splunk.transform.NRWidgetType.*;
 
 public class BillboardToSingleValueChartTransformer extends WidgetToChartTransformer<SingleValueChart> {
 
   public BillboardToSingleValueChartTransformer(Transformer<NRWidget, String> chartIdTransformer,
-      Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory) {
-    super(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory);
+      Transformer<NRWidget, String> nrqlToProgramTextTransformer, SplunkO11yTemplateFactory templateFactory, IdUtils idUtils) {
+    super(chartIdTransformer, nrqlToProgramTextTransformer, templateFactory, idUtils);
 
   }
 
