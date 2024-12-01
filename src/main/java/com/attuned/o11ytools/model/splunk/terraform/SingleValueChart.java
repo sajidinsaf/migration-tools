@@ -77,4 +77,9 @@ public class SingleValueChart extends Chart {
       System.out.println(s);
     }
   }
+
+  @Override
+  protected String getSignalFxTerraformChartType() {
+    return "signalfx_single_value_chart";
+  }
 }

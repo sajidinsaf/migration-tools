@@ -9,7 +9,7 @@ public abstract class Chart implements Terraformable {
 
 	private String id, name, description, programText;
     
-    private List<String> terraformTemplateLines;
+  private List<String> terraformTemplateLines;
 
 	public Chart(List<String> terraformTemplateLines) {
 		this.terraformTemplateLines = terraformTemplateLines;
@@ -97,5 +97,10 @@ public abstract class Chart implements Terraformable {
   }
 
   protected abstract String renderSpecifics(String line);
-	
+  
+  protected abstract String getSignalFxTerraformChartType();
+  
+  public String getTerraformChartIDForDashboard() {
+    return getSignalFxTerraformChartType() + "." + getId();
+  }
 }

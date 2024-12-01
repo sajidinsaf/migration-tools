@@ -5,6 +5,7 @@ import java.util.List;
 
 public class NRPage {
 
+    private String id;
     private String name;
     private String description;
     private List<NRWidget> widgets;
@@ -12,12 +13,21 @@ public class NRPage {
     public NRPage() {
     	widgets = new ArrayList<NRWidget>();
     }
-	public NRPage(String name, String description, List<NRWidget> widgets) {
+    
+	public NRPage(String id, String name, String description, List<NRWidget> widgets) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.widgets = widgets;
 	}
+	
+  public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
 	public String getName() {
 		return name;
 	}
@@ -44,10 +54,11 @@ public class NRPage {
 		}
 		this.widgets.add(widget);
 	}
-	@Override
-	public String toString() {
-		return "NRPage [name=" + name + ", description=" + description + ", widgets=" + widgets + "]";
-	}
+
+  @Override
+  public String toString() {
+    return "NRPage [id=" + id + ", name=" + name + ", description=" + description + ", widgets=" + widgets + "]";
+  }
 	
 	
 }

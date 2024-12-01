@@ -24,7 +24,10 @@ import com.attuned.o11ytools.model.wrapper.NRWidgetAndChartWrapper;
 import com.attuned.o11ytools.model.nr.dashboard.NRPage;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 import com.attuned.o11ytools.parser.nr.NewRelicDashboardJsonParser;
+import com.attuned.o11ytools.parser.nr.NewRelicPageJsonParser;
+import com.attuned.o11ytools.parser.nr.NewRelicWidgetJsonParser;
 import com.attuned.o11ytools.util.FileUtils;
+import com.attuned.o11ytools.util.IdUtils;
 
 public class NRToSplunkDashboardMigrator {
 	
@@ -54,17 +57,20 @@ public class NRToSplunkDashboardMigrator {
 	private void process(Properties props) throws Exception {
 		String dashboardJsonDirPath = props.getProperty("nr.dashboards.json.base.dir");
 
-		System.out.println(dashboardJsonDirPath);
+		// System.out.println(dashboardJsonDirPath);
 		File dir = new File(dashboardJsonDirPath);
 		
-		List<NRDashboard> nrDashboards = new NewRelicDashboardJsonParser().parse(dir);
+		IdUtils idUtils = new IdUtils();
+    NewRelicPageJsonParser nrPageJsonParser = new NewRelicPageJsonParser(new NewRelicWidgetJsonParser(), idUtils);
+		
+		List<NRDashboard> nrDashboards = new NewRelicDashboardJsonParser(idUtils, nrPageJsonParser).parse(dir);
 
 		printNRDashboardStats(nrDashboards);
 		
 		printNRWidgetStats(nrDashboards);
 		
 		Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers = getWidgetToChartTransformers(props);
-	  new NRDashboardToSplunkO11yTerraformBuilder(filePathBuilder, widgetToChartTransformers).build(nrDashboards, props);
+	  new NRDashboardToSplunkO11yTerraformBuilder(filePathBuilder, new IdUtils(), widgetToChartTransformers).build(nrDashboards, props);
 		
 	}
 	
@@ -121,7 +127,7 @@ public class NRToSplunkDashboardMigrator {
 
 		Set<String> vizs = new HashSet<String>();
 		for (NRDashboard dash : nrDashboards) {
-			for (NRPage page : dash.pages) {
+			for (NRPage page : dash.getPages()) {
 
 				for (NRWidget w : page.getWidgets()) {
 					vizs.add(w.getVisualization().getId());
@@ -145,7 +151,7 @@ public class NRToSplunkDashboardMigrator {
 		}
 		int totalCount = 0;
 		for (NRDashboard dash : nrDashboards) {
-			for (NRPage page : dash.pages) {
+			for (NRPage page : dash.getPages()) {
 				int pageCount = page.getWidgets().size();
 				totalCount += pageCount;
 				System.out.println("Dashboard: "+dash.getName()+ " NRPage: "+page.getName()+ " WidgetCount: "+pageCount);

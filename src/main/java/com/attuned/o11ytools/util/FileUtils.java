@@ -32,14 +32,14 @@ public class FileUtils {
 	public File getSplunkDashboardGroupTFFilePath(NRDashboard dash, File baseDir) {
 		String basePath = baseDir.getAbsolutePath();
 		// System.out.println(dash);
-		String fileName = cleanForFileName(dash.getName())+".tf";
+		String fileName = "Dashboard_"+cleanForFileName(dash.getName())+".tf";
 		String filePath = basePath + System.getProperty("file.separator")+fileName;
 		return new File(filePath);
 	}
 	
 	public File getChartsFilePathForDashboard(NRDashboard dash, File baseDir) {
 		String basePath = baseDir.getAbsolutePath();
-		String filePath = basePath + System.getProperty("file.separator")+cleanForFileName(dash.getName())+"_Charts.tf";
+		String filePath = basePath + System.getProperty("file.separator")+"Charts_"+cleanForFileName(dash.getName())+".tf";
 		return new File(filePath);
 	}
 
@@ -78,11 +78,11 @@ public class FileUtils {
 	}
 
 
-  public void writeToNewFile(List<String> lines, File file) {
+  public void writeToFile(List<String> lines, File file, boolean append) {
     
    PrintWriter writer = null;
    try {
-     writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+     writer = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
      
      for (String line : lines) {
        writer.println(line);
@@ -104,4 +104,6 @@ public class FileUtils {
    }
     
   }
+  
+  
 }

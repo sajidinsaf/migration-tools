@@ -5,13 +5,24 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.attuned.o11ytools.model.nr.dashboard.NRDashboard;
 import com.attuned.o11ytools.model.nr.dashboard.NrqlQuery;
+import com.attuned.o11ytools.util.IdUtils;
 import com.attuned.o11ytools.model.nr.dashboard.NRPage;
 import com.attuned.o11ytools.model.nr.dashboard.NRWidget;
 
 public class NewRelicDashboardJsonParser {
+  
+  private AtomicInteger dashboardCounter = new AtomicInteger();
+  private IdUtils idUtils;
+  private NewRelicPageJsonParser nrPageJsonParser;
+  
+  public NewRelicDashboardJsonParser(IdUtils idUtils, NewRelicPageJsonParser nrPageJsonParser) {
+    this.idUtils = idUtils;
+    this.nrPageJsonParser = nrPageJsonParser;
+  }
 
 	public List<NRDashboard> parse(File dir) throws Exception {
 
@@ -40,7 +51,7 @@ public class NewRelicDashboardJsonParser {
 			String permissions = null;
 			while ((line = reader.readLine()) != null) {
 
-				if (name == null && line.contains("\"name\":")) {
+				if (name == null && line.contains("\"name\":")) { // reading the dashboard name (this will become the dashboard group in Splunk O11y
 					name = getVal(line);
 				} else if (description == null && line.contains("\"description\":")) {
 					description = getVal(line);
@@ -68,8 +79,9 @@ public class NewRelicDashboardJsonParser {
 
 			List<PageJson> pageJsons = new ArrayList<PageJson>();
 
-			boolean widgetOpen = false;
+
 			for (List<String> pgJsonLines : pagesJson) {
+	       boolean widgetOpen = false;
 				List<List<String>> wdgtJsons = new ArrayList<List<String>>();
 				PageJson pgJsnObj = new PageJson();
 
@@ -84,7 +96,7 @@ public class NewRelicDashboardJsonParser {
 						widgetOpen = true;
 						widgetLines = new ArrayList<String>();
 						widgetLines.add(s);
-					} else if (s.startsWith("        },")) {
+					} else if (widgetOpen && s.startsWith("        }")) {
 						widgetOpen = false;
 						wdgtJsons.add(widgetLines);
 					} else if (widgetOpen) {
@@ -96,13 +108,14 @@ public class NewRelicDashboardJsonParser {
 
 			}
 
-			NewRelicPageJsonParser nrPageJsonParser = new NewRelicPageJsonParser(new NewRelicWidgetJsonParser());
+
 			List<NRPage> pages = nrPageJsonParser.parsePages(pageJsons);
 
 			if (name == null) {
 		    System.out.println(file.getAbsolutePath()+"Warning!!! Dashboard name is null. Dashboard will not be parsed. NR Dashboard JSON file: "+file.getAbsolutePath());
 			} else {
-			dashboards.add(new NRDashboard(name, description, permissions, pages));
+			  String id = idUtils.buildIdFromName(name+"_"+dashboardCounter.incrementAndGet());
+			  dashboards.add(new NRDashboard(id, name, description, permissions, pages));
 			}
 
       reader.close();
@@ -114,7 +127,9 @@ public class NewRelicDashboardJsonParser {
 		return dashboards;
 	}
 
-	public static String getVal(String line) {
+
+
+  public static String getVal(String line) {
 		if (!line.contains(":") ) {
 			return null;
 		}

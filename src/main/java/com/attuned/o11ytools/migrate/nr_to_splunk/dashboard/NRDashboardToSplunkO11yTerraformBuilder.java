@@ -2,6 +2,7 @@ package com.attuned.o11ytools.migrate.nr_to_splunk.dashboard;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -14,14 +15,16 @@ import com.attuned.o11ytools.model.splunk.terraform.Chart;
 import com.attuned.o11ytools.model.wrapper.NRWidgetAndChartWrapper;
 import com.attuned.o11ytools.model.wrapper.Wrapper;
 import com.attuned.o11ytools.util.FileUtils;
+import com.attuned.o11ytools.util.IdUtils;
 
 public class NRDashboardToSplunkO11yTerraformBuilder {
 	
 	private FileUtils fileUtils;
 	private Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers;
-	
-	public NRDashboardToSplunkO11yTerraformBuilder(FileUtils fileUtils, Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers) {
+	private IdUtils idUtils;
+	public NRDashboardToSplunkO11yTerraformBuilder(FileUtils fileUtils, IdUtils idUtils, Map<String, Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>>> widgetToChartTransformers) {
 		this.fileUtils = fileUtils;
+		this.idUtils = idUtils;
 		this.widgetToChartTransformers = widgetToChartTransformers;
 	}
 
@@ -34,12 +37,18 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
 		
 		
 		for (NRDashboard nrDashboard : nrDashboards) {
+//		  if (!nrDashboard.getName().contains("SRE")) {
+//		    continue;
+//		  }
 			File dashboardGroupTFFile = fileUtils.getSplunkDashboardGroupTFFilePath(nrDashboard, terraformDir);
-			File dashboardChartsFile = fileUtils.getChartsFilePathForDashboard(nrDashboard, terraformDir);
-			
-			List<NRWidgetAndChartWrapper<? extends Chart>> charts = new ArrayList<NRWidgetAndChartWrapper<? extends Chart>>();
-			
+      fileUtils.writeToFile(getDashboardGroupLines(nrDashboard, props), dashboardGroupTFFile, false);
 			for (NRPage page : nrDashboard.getPages()) {
+
+		    fileUtils.writeToFile(getDashboardOpeningLines(page, nrDashboard, props), dashboardGroupTFFile, true);
+	      File dashboardChartsFile = fileUtils.getChartsFilePathForDashboard(nrDashboard, terraformDir);
+	      
+	      int row = 0;
+	      int column = 0;
 				for (NRWidget w : page.getWidgets()) {
 					String widgetId = w.getVisualization().getId();
 					Transformer<NRWidget, NRWidgetAndChartWrapper<? extends Chart>> transformer = widgetToChartTransformers.get(widgetId);
@@ -48,17 +57,68 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
 					  continue;
 					}
 					NRWidgetAndChartWrapper<? extends Chart> wrapper = transformer.transform(w);
-					charts.add(wrapper);
+		      writeChartsFile(dashboardChartsFile ,Arrays.asList(wrapper));
+		      writeAddChartToDashboard(dashboardGroupTFFile, wrapper, column, row);
+		      
+		      column += 4;
+          if (column==12) {
+		        ++row;
+		        column=0;
+		      }
 				}
 				
+				closeJson(dashboardGroupTFFile, "");
+				
 			}
-			
-      writeChartsFile(dashboardChartsFile ,charts);
 			
 		}
 		
 		
 	}
+
+  private void closeJson(File file, String indent) {
+    
+    fileUtils.writeToFile(Arrays.asList(indent+"}"), file, true);
+   
+  }
+
+  private void writeAddChartToDashboard(File dashboardGroupTFFile, NRWidgetAndChartWrapper<? extends Chart> wrapper, int column, int row) {
+    List<String> lines = new ArrayList<String>();
+    
+    lines.add("  chart {");
+    lines.add("    chart_id = "+idUtils.getChartIdForTerraformDashboard(wrapper)+".id");
+    lines.add("    width = 4");
+    lines.add("    height = 1");
+    lines.add("    column = "+column);
+    lines.add("    row = "+row);
+    lines.add("  }");
+    fileUtils.writeToFile(lines, dashboardGroupTFFile, true);
+    
+  }
+
+  private List<String> getDashboardOpeningLines(NRPage page, NRDashboard dashboard, Properties props) {
+    List<String> lines = new ArrayList<String>();
+  
+    lines.add("resource \"signalfx_dashboard\" \""+page.getId()+"\" {");
+    lines.add("  name = \""+page.getName()+"\"");
+    lines.add("  description = \""+page.getDescription()+"\""); 
+    lines.add("  dashboard_group = signalfx_dashboard_group."+dashboard.getId()+".id");
+    return lines;
+  }
+
+  private List<String> getDashboardGroupLines(NRDashboard nrDashboard, Properties props) {
+    List<String> lines = new ArrayList<String>();
+    lines.add("resource \"signalfx_dashboard_group\" \""+nrDashboard.getId()+"\" {"); 
+    lines.add("  name = \""+nrDashboard.getName()+"\"");
+    lines.add("  description = \""+nrDashboard.getDescription()+"\"");
+    lines.add("  permissions {");
+    lines.add("    principal_id    = \""+props.getProperty("principal.id")+"\"");
+    lines.add("    principal_type  = \"ORG\"");
+    lines.add("    actions         = [\"READ\", \"WRITE\"]");
+    lines.add("  }");
+    lines.add("}");
+    return lines;
+  }
 
   private void writeChartsFile(File dashboardChartsFile, List<NRWidgetAndChartWrapper<? extends Chart>> charts) {
     List<String> lines = new ArrayList<String>();
@@ -67,6 +127,6 @@ public class NRDashboardToSplunkO11yTerraformBuilder {
       lines.add("");
     }
     
-    fileUtils.writeToNewFile(lines, dashboardChartsFile);
+    fileUtils.writeToFile(lines, dashboardChartsFile, true);
   }
 }

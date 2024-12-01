@@ -69,7 +69,10 @@ public class TimeChart extends Chart {
 		return sb.toString();
 	}
 	
-
+  @Override
+  protected String getSignalFxTerraformChartType() {
+    return "signalfx_time_chart";
+  }
 
     
 }
