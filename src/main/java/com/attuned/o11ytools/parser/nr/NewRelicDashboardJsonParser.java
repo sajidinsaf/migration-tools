@@ -39,6 +39,10 @@ public class NewRelicDashboardJsonParser {
         continue;
       }
 
+      // uncomment and change the file name pattern to run for a single json file.
+//      if (!file.getName().contains("App Versions")) {
+//        continue;
+//      }
       LOGGER.info("Loading dashboard from file: " + file.getAbsolutePath());
 
       BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -75,7 +79,7 @@ public class NewRelicDashboardJsonParser {
         } else if (!variablesOpen && line.equals("    {")) {
           pageOpen = true;
           pageJson = new ArrayList<String>();
-        } else if (!variablesOpen && line.equals("    },")) {
+        } else if (!variablesOpen && (line.equals("    },") || line.equals("    }"))) {
           pageOpen = false;
           pagesJson.add(pageJson);
         } else if (pageOpen) {

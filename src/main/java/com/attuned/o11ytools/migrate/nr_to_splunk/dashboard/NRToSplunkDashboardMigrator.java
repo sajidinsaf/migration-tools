@@ -33,7 +33,7 @@ import com.attuned.o11ytools.util.StatsUtils;
 
 public class NRToSplunkDashboardMigrator {
 	
-	private static boolean runWithStats = false;
+	private static boolean runWithStats = true;
 
 	private StatsUtils statsUtils;
   private IdUtils idUtils;
